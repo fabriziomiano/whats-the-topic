@@ -9,7 +9,7 @@ function usage()
 }
 
 CONFIG=$1
-if [ -z $CONFIG ]; then
+if [[ -z $CONFIG ]]; then
     echo "ERROR :: Config file not specified"
     echo "Please specify the config-file path to use"
     echo -e "\a"
