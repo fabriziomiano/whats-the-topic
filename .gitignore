@@ -1,0 +1,6 @@
+.vs*
+.env
+.ipynb*
+*cache*
+plots*
+*.csv
