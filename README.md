@@ -1,10 +1,5 @@
-# FbPostTopicAna
+# FBPostTopicAna
 Facebook post basic topic analysis
-
-## Requirements
-
-A Facebook API token from facebook for developers, 
-Python3+, `virtualenv`
 
 ## What is it?
 A simple tool to run a basic, very simple, 
@@ -22,11 +17,17 @@ posts, etc.
 It can be run on the last n plots, or on a given post id.
 
 ## How to install
+
 This tool was developed on Ubuntu 18.04 and has never been 
 seriously tested. 
 It requires Python3+ and `virtualenv`. 
 With these two installed, simply clone the repo
 and run `source install.sh`
+
+#### Requirements
+
+A Facebook API token from facebook for developers, 
+Python3+, `virtualenv`
 
 
 ## How to run
