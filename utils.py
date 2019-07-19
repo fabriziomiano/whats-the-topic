@@ -1,24 +1,19 @@
-from nltk.corpus import stopwords
-from nltk.stem.snowball import SnowballStemmer
-from wordcloud import WordCloud
-from matplotlib import pyplot as plt
-import facebook
 import errno
 import pandas as pd
-import string
 import json
 import requests
 import logging
-import seaborn as sns
 import os
 import sys
-import unicodedata
 
 
 def get_logger(name):
-    """ 
+    """
     Add a StreamHandler to a logger if still not added and
     return the logger
+
+    :param name:
+    :return: logging.getLogger object
     """
     logger = logging.getLogger(name)
     if not logger.handlers:
@@ -36,6 +31,12 @@ utils_log.setLevel(logging.INFO)
 
 
 def load_config(path):
+    """
+    Return a dict for a given json path
+
+    :param path:
+    :return: dict
+    """
     try:
         with open(path, "r") as conf_file:
             conf = json.load(conf_file)
@@ -45,22 +46,24 @@ def load_config(path):
         sys.exit(0)
 
 
-STEMMER = SnowballStemmer("italian")
-with open("stoplist.json") as stop_in:
-    STOPLIST = json.load(stop_in)
-# STOPLIST = stopwords.words("italian") + stopwords.words("english")
-# STOPLIST.extend(ADDITIONAL_STOPLIST)
-
-
 def get_data(access_token, post_id):
+    """
+    Get the data for a given post_id, given
+    a valid access token
+
+    :param access_token: str
+    :param post_id: str
+    :return:
+    """
     base_url = "https://graph.facebook.com/"
     comments_endpoint = (
         "/comments?fields=message,comments{message,comments}&summary=1&access_token="
     )
-    comments_url = base_url + \
-                post_id + \
-                comments_endpoint + \
-                access_token
+    comments_url = (
+            base_url + post_id +
+            comments_endpoint +
+            access_token
+    )
     comments_data = requests.get(comments_url).json()
     data = []
     while True:
@@ -73,6 +76,12 @@ def get_data(access_token, post_id):
 
 
 def get_comments(data):
+    """
+    Get all the comments for a given facebook post
+    data dict
+    :param data: dict
+    :return: list; list of comments
+    """
     all_comments = []
     for comment in data:
         if "comments" in comment.keys():
@@ -83,60 +92,14 @@ def get_comments(data):
     return all_comments
 
 
-def remove_non_ascii(text):
-    """Remove non-ASCII characters from text"""
-    tokens = text.split()
-    onlyascii_tokens = []
-    for token in tokens:
-        token = unicodedata.normalize('NFKD', token).encode('ascii', 'ignore').decode('utf-8', 'ignore')
-        onlyascii_tokens.append(token)
-    return " ".join(word for word in onlyascii_tokens)
-
-
-def remove_punctuation(text):
-    return text.translate(
-        str.maketrans('', '', string.punctuation)
-    )
-
-
-def remove_stopwords(tokens, stoplist):
-    text = " ".join(
-        token for token in tokens
-        if token not in stoplist
-    )
-    return text
-
-
-def stem_text(tokens):
-    text = " ".join(STEMMER.stem(t) for t in tokens)
-    return text
-
-
-def base_preproc(text, stoplist=STOPLIST):
+def do_wordcount(preprocessed_comments):
     """
+    Perfom word count on a given list of words
+    Return a sorted list of tuples(word, count)
+
+    :param preprocessed_comments: list
+    :return: list
     """
-    text = remove_non_ascii(text)
-    text = text.lower()
-    tokens = text.split()
-    text = remove_stopwords(tokens, stoplist)
-    text = remove_punctuation(text)
-    return text
-
-
-def preprocess(text, stoplist=STOPLIST):
-    """
-    """
-    text = remove_non_ascii(text)
-    text = text.lower()
-    tokens = text.split()
-    text = remove_stopwords(tokens, stoplist)
-    text = remove_punctuation(text)
-    tokens = text.split()
-    text = stem_text(tokens)
-    return text
-
-
-def get_wordcount(preprocessed_comments):
     wordcount = {}
     for comment in preprocessed_comments:
         for word in comment.split():
@@ -152,40 +115,15 @@ def get_wordcount(preprocessed_comments):
 
 
 def save_data(wordcount_data, data_filename):
+    """
+    Save a CSV file of a given word count data
+
+    :param wordcount_data: list of tuples(word, count)
+    :param data_filename: str
+    :return: None
+    """
     df = pd.DataFrame(wordcount_data, columns=["word", "count"])
     df.to_csv(data_filename, index=False)
-
-
-def save_wordcloud_plot(long_string, path):
-    wordcloud = WordCloud(
-        background_color="black",
-        contour_width=3,
-        contour_color='steelblue'
-    )
-    wordcloud.generate(long_string)
-    wordcloud.to_file(path)
-
-
-def plot_wordcloud(long_string):
-    wordcloud = WordCloud(
-        background_color="black",
-        contour_width=3,
-        contour_color='steelblue'
-    )
-    wordcloud.generate(long_string)
-    wordcloud.to_image()
-    return wordcloud.to_image()
-
-
-def save_barplot(wordcount_data, n_top_words, path): 
-    df = pd.DataFrame(wordcount_data, columns=["word", "count"])     
-    plt.figure(figsize=(n_top_words, 10))
-    barplot = sns.barplot("word", "count", data=df[:n_top_words], palette="Blues_d")
-    barplot.set_title("Top {} Words".format(n_top_words))
-    plt.xticks(rotation=30)
-    plt.xlabel("Word")
-    plt.ylabel("Count", labelpad=60, rotation=0)
-    plt.savefig(path)    
 
 
 def create_nonexistent_dir(path, exc_raise=False):
