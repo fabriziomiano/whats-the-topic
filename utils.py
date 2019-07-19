@@ -1,10 +1,11 @@
 import errno
-import pandas as pd
 import json
-import requests
 import logging
 import os
 import sys
+
+import pandas as pd
+import requests
 
 
 def get_logger(name):
@@ -21,7 +22,7 @@ def get_logger(name):
         console = logging.StreamHandler()
         logger.addHandler(console)
         formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - [%(levelname)s] %(message)s')
+            '[%(asctime)s] - %(name)s - [%(levelname)s] %(message)s')
         console.setFormatter(formatter)
     return logger
 
