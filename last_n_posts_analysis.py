@@ -26,10 +26,10 @@ def main():
     logger = get_logger(__name__)
     logger.setLevel(logging.DEBUG)
     conf = load_config(config_path)
+    n_posts = input("Provide number of latest posts to analyze: ")
     try:
         access_token = conf["access_token"]
         page_id = conf["page_id"]
-        n_posts = conf["n_posts"]
         n_top_words = conf["n_top_words"]
         data_dir_path = os.path.join(page_id, conf["data_dir_name"])
         data_filename = "{}_{}.csv".format(conf["csv_prefix"], str(n_posts))
@@ -55,7 +55,8 @@ def main():
     logger.info("Got {} posts".format(n_posts))
     data = []
     for post in posts["data"]:
-        logger.info("Fetching data for post ID: {}".format(post["id"].split("_")[1]))
+        url_post = "https://www.facebook.com/posts/{}".format(post["id"])
+        logger.info("Getting data for post {}".format(url_post))
         post_data = get_data(access_token, post["id"])
         post_comments = get_comments(post_data)
         if len(post_comments) == 0:
