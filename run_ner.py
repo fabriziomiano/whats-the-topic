@@ -14,10 +14,6 @@ from utils import (
 )
 
 
-nlp_en = spacy.load("en_core_web_sm")
-nlp_it = spacy.load("it_core_news_sm")
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="""Count comments in a given number of posts""")
