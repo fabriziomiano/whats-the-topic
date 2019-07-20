@@ -41,7 +41,8 @@ def main():
         logger.error(
             "Invalid configuration file. Please check template and retry")
         sys.exit(0)
-    logger.info("Getting data for post with ID: {}".format(post_id))
+    url_post = "https://www.facebook.com/posts/{}".format(post_id)
+    logger.info("Getting data for post {}".format(url_post))
     actual_post_id = page_id + "_" + post_id
     local_start = time.time()
     data = get_data(access_token, actual_post_id)
