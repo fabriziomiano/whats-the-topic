@@ -6,8 +6,8 @@ import time
 
 import facebook
 
-from classes.WordCloudPlotter import Plotter
 from classes.TextPreprocessor import TextPreprocessor
+from classes.WordCloudPlotter import Plotter
 from utils import (
     get_logger, load_config, get_data, get_comments, do_wordcount,
     create_nonexistent_dir, save_data, save_barplot, check_n_posts
@@ -33,7 +33,7 @@ def main():
         page_id = conf["page_id"]
         n_top_words = conf["n_top_words"]
         data_dir_path = os.path.join(page_id, conf["data_dir_name"])
-        data_filename = "{}_{}.csv".format(conf["csv_prefix"], str(n_posts))
+        data_filename = "{}_{}.csv".format(conf["data_wc_prefix"], str(n_posts))
         plots_dir_path = os.path.join(page_id, conf["plots_dir_name"])
         wc_plot_filename = "{}_{}posts.png".format(conf["wc_plot_filename"], str(n_posts))
         wc_plot_filepath = os.path.join(plots_dir_path, wc_plot_filename)
@@ -50,10 +50,8 @@ def main():
     except facebook.GraphAPIError as e:
         logger.error("Could not log in. {}".format(e))
         sys.exit(0)
-    logger.info("Getting the last {} posts".format(n_posts))
     local_start = time.time()
     posts = graph.get_connections(profile["id"], "posts", limit=n_posts)
-    logger.info("Got {} posts".format(n_posts))
     comments = []
     for post in posts["data"]:
         url_post = "https://www.facebook.com/posts/{}".format(post["id"])
@@ -67,13 +65,19 @@ def main():
                 https://www.facebook.com/posts/{}""".format(post["id"])
             )
         comments.extend(post_comments)
-    if len(comments) < 100:
+    if len(comments) == 0:
+        logger.error("Could not get any comments. Exiting gracefully")
+        sys.exit(0)
+    elif len(comments) < 100:
         logger.warning(
-            "Found less than 100 comments. Not enough data "
-            "to make much sense. Plots will be made regardless")
+            "Found {} comment(s). Not enough data "
+            "to make much sense. Plots will be made regardless".format(
+                len(comments)
+            )
+        )
     else:
         logger.info("Got {} comments from {} post(s) in {} seconds".format(
-            len(comments), n_posts, round((time.time() - local_start), 1)))
+            len(comments), len(posts["data"]), round((time.time() - local_start), 1)))
     local_start = time.time()
     preprocessed_comments = [TextPreprocessor(comm).preprocess() for comm in comments]
     logger.info("Preprocessed {} comments out of {} in {} seconds".format(
