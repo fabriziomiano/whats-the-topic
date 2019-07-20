@@ -30,14 +30,14 @@ def main():
         access_token = conf["access_token"]
         page_id = conf["page_id"]
         n_posts = conf["n_posts"]
-        plots_dir_path = conf["plots_dir_path"]
-        data_dir_path = conf["data_dir_path"]
         n_top_words = conf["n_top_words"]
-        wc_plot_filename = "{}_{}.png".format(conf["wc_plot_filename"], str(n_posts))
-        barplot_filename = "{}_{}.png".format(conf["barplot_filename"], str(n_posts))
-        wc_plot_filepath = os.path.join(plots_dir_path, wc_plot_filename)
-        barplot_filepath = os.path.join(plots_dir_path, barplot_filename)
+        data_dir_path = os.path.join(page_id, conf["data_dir_name"])
         data_filename = "{}_{}.csv".format(conf["csv_prefix"], str(n_posts))
+        plots_dir_path = os.path.join(page_id, conf["plots_dir_name"])
+        wc_plot_filename = "{}_{}posts.png".format(conf["wc_plot_filename"], str(n_posts))
+        wc_plot_filepath = os.path.join(plots_dir_path, wc_plot_filename)
+        barplot_filename = "{}_{}posts.png".format(conf["barplot_filename"], str(n_posts))
+        barplot_filepath = os.path.join(plots_dir_path, barplot_filename)
     except KeyError:
         logger.error(
             "Invalid configuration file. Please check template and retry")
@@ -55,16 +55,20 @@ def main():
     logger.info("Got {} posts".format(n_posts))
     data = []
     for post in posts["data"]:
-        logger.info("Fetching data for post ID: {}".format(post["id"]))
+        logger.info("Fetching data for post ID: {}".format(post["id"].split("_")[1]))
         post_data = get_data(access_token, post["id"])
+        post_comments = get_comments(post_data)
+        if len(post_comments) == 0:
+            logger.warning(
+                """Apparently, there are no comments at the selected post
+                Check the actual post on its Facebook page 
+                https://www.facebook.com/posts/{}""".format(post["id"])
+            )
         data.extend(post_data)
     comments = get_comments(data)
-    if len(comments) == 0:
-        logger.error("No comments could be retrieved from the selected post")
-        sys.exit(0)
-    elif len(comments) == 1:
+    if len(comments) < 100:
         logger.warning(
-            "Found only 1 comments. Not enough data "
+            "Found less than 100 comments. Not enough data "
             "to make much sense. Plots will be made regardless")
     else:
         logger.info("Got {} comments from {} post(s) in {} seconds".format(
@@ -74,7 +78,6 @@ def main():
     logger.info("Preprocessed {} comments out of {} in {} seconds".format(
         len(preprocessed_comments), len(comments), round((time.time() - local_start), 2)))
     wordcount_data = do_wordcount(preprocessed_comments)
-    logger.info("Saving data to CSV with name {} ".format(data_filename))
     create_nonexistent_dir(data_dir_path)
     data_filepath = os.path.join(data_dir_path, data_filename)
     save_data(wordcount_data, data_filepath)
