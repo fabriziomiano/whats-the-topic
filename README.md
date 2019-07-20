@@ -18,7 +18,7 @@ It can be run on the last n plots, or on a given post id.
 
 ## How to install
 
-This tool was developed on Ubuntu 18.04 and has never been 
+This tool has been developed on Ubuntu 18.04 and has never been 
 seriously tested. 
 It requires Python3+ and `virtualenv`. 
 With these two installed, simply clone the repo
