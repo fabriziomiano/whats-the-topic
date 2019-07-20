@@ -36,10 +36,18 @@ Two modes are allowed and they can be executed with the following
 ##### Single-post using post ID
 * `source by_id.sh settings.conf` 
 ##### Latest N posts
-* `source latest.sh settings.conf` 
+* `source latest.sh settings.conf`
 
-The tool will run until the settings requested are met or 
-up until the max request rate that facebook applies is reached.
+##### Named-Entity Recognition using spaCy
+Additionally, it is possible to run Named-Entity Recognition using 
+default spaCy models (supported: en, it). 
+No Word Cloud option provided in this case
+* `source ner.sh settings.conf`
+
+
+### Considerations 
+The tool is designed to run until the settings requested are met or 
+up until the max request rate, that Facebook do apply, is reached.
 
 That's it!
 
