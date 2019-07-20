@@ -4,7 +4,7 @@ function usage()
     echo ""
     echo -e "\tInstructions"
     echo ""
-    echo -e "\tsource ner.sh <path/to/config-file>"
+    echo -e "\tsource ner_by_id.sh <path/to/config-file>"
     echo ""
 }
 
@@ -15,6 +15,6 @@ if [[ -z $CONFIG ]]; then
     echo -e "\a"
     usage
 else
-    echo "INFO :: Running Named-Entity Recognition using config file" $CONFIG
-    python ./run_ner.py --conf $CONFIG
+    echo "INFO :: Running Named-Entity Recognition using config file:" $CONFIG
+    python ./run_ner_by_id.py --conf $CONFIG
 fi
