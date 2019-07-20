@@ -63,9 +63,10 @@ class TextPreprocessor(object):
 
         :return: self.text
         """
-        self.remove_punctuation()
+        self.text = self.text.lower()
         self.remove_non_ascii()
         self.remove_stopwords()
+        self.remove_punctuation()
         return self.text
 
     def preprocess(self):
