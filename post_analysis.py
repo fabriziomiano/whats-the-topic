@@ -4,11 +4,11 @@ import os
 import sys
 import time
 
-from classes.Plotter import Plotter
+from classes.WordCloudPlotter import Plotter
 from classes.TextPreprocessor import TextPreprocessor
 from utils import (
     get_logger, load_config, get_data, get_comments, do_wordcount,
-    create_nonexistent_dir, save_data
+    create_nonexistent_dir, save_data, save_barplot
 )
 
 
@@ -20,7 +20,9 @@ def main():
         help='Specify the path of the configuration file')
     args = parser.parse_args()
     config_path = args.conf
-    post_id = input("Provide post ID: ")
+    post_id = ""
+    while post_id == "":
+        post_id = input("Provide post ID: ")
     start = time.time()
     logger = get_logger(__name__)
     logger.setLevel(logging.DEBUG)
@@ -32,10 +34,9 @@ def main():
         data_dir_path = conf["data_dir_name"]
         data_filename = "{}_{}{}".format(conf["csv_prefix"], post_id, ".csv")
         plots_dir_path = os.path.join(conf["plots_dir_name"], page_id, "single_posts", post_id)
-        plot_suffix = post_id.split("_")[1]
-        wc_plot_filename = "{}_{}{}".format(conf["wc_plot_filename"], plot_suffix, ".png")
+        wc_plot_filename = "{}_{}{}".format(conf["wc_plot_filename"], post_id, ".png")
         wc_plot_filepath = os.path.join(plots_dir_path, wc_plot_filename)
-        barplot_filename = "{}_{}{}".format(conf["barplot_filename"], plot_suffix, ".png")
+        barplot_filename = "{}_{}{}".format(conf["barplot_filename"], post_id, ".png")
         barplot_filepath = os.path.join(plots_dir_path, barplot_filename)
     except KeyError:
         logger.error(
@@ -72,15 +73,14 @@ def main():
     save_data(wordcount_data, data_filepath)
     logger.info("Saved {} words and their counts in {} ".format(
         len(wordcount_data), data_filepath))
-    logger.info("Making plots")
+    create_nonexistent_dir(plots_dir_path)
+    save_barplot(wordcount_data, n_top_words, barplot_filepath)
+    logger.info("Bar plot saved at {}".format(barplot_filepath))
     unstemmed_comments = [TextPreprocessor(comm).base_preprocess() for comm in comments]
     long_string = " ".join(uc for uc in unstemmed_comments)
-    create_nonexistent_dir(plots_dir_path)
-    p = Plotter(long_string, wordcount_data)
+    p = Plotter(long_string)
     p.save_wordcloud_plot(wc_plot_filepath)
     logger.info("Word Cloud plot saved at {}".format(wc_plot_filepath))
-    p.save_barplot(n_top_words, barplot_filepath)
-    logger.info("Bar plot saved at {}".format(barplot_filepath))
     logger.info("\a\a\aDIN DONE!")
     logger.info("Total time of execution: {} seconds".format(
         round((time.time() - start), 1)))
