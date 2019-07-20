@@ -26,8 +26,10 @@ def main():
     logger = get_logger(__name__)
     logger.setLevel(logging.DEBUG)
     conf = load_config(config_path)
-    n_posts = input("Provide number of latest posts to analyze: ")
-    check_n_posts(n_posts)
+    n_posts = check_n_posts()
+    if not n_posts.isdigit():
+        logger.error("Please give a number. Exiting")
+        sys.exit(0)
     try:
         access_token = conf["access_token"]
         page_id = conf["page_id"]
