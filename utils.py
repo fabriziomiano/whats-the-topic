@@ -52,14 +52,14 @@ def load_config(path):
         sys.exit(0)
 
 
-def get_data(access_token, post_id):
+def get_post_data(access_token, post_id):
     """
     Get the data for a given post_id, given
     a valid access token
 
     :param access_token: str
     :param post_id: str
-    :return:
+    :return data: post data dict
     """
     base_url = "https://graph.facebook.com/"
     comments_endpoint = (
@@ -123,22 +123,19 @@ def save_data(wordcount_data, data_filename):
 
 def create_nonexistent_dir(path, exc_raise=False):
     """
-    Create directory from given path
-    Return True if created, False if it exists
+    Create a directory from a given path if it does not exist.
+    If exc_raise is False, no exception is raised
 
     """
     try:
         os.makedirs(path)
         utils_log.info("Created directory with path: {}".format(path))
-        is_success = True
     except OSError as e:
-        is_success = False
         if e.errno != errno.EEXIST:
             utils_log.exception(
                 "Could not create directory with path: {}".format(path))
             if exc_raise:
                 raise
-    return is_success
 
 
 def get_entities(nlp, comment):
