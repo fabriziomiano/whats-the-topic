@@ -45,9 +45,9 @@ def main():
         page_id = conf["page_id"]
         n_top_entities = conf["n_top_entities"]
         data_dir_path = os.path.join(page_id, conf["data_dir_name"])
-        data_filename = "{}_{}.csv".format(conf["entities_prefix"], str(n_posts))
+        data_filename = "{}_{}.csv".format(conf["data_entities_prefix"], str(n_posts))
         plots_dir_path = os.path.join(page_id, conf["plots_dir_name"])
-        barplot_filename = "{}_{}posts.png".format(conf["barplot_filename"], str(n_posts))
+        barplot_filename = "{}_{}posts_ner.png".format(conf["barplot_filename"], str(n_posts))
         barplot_filepath = os.path.join(plots_dir_path, barplot_filename)
     except KeyError:
         logger.error(
@@ -83,10 +83,16 @@ def main():
                 https://www.facebook.com/posts/{}""".format(post["id"])
             )
         comments.extend(post_comments)
-    if len(comments) < 100:
+    if len(comments) == 0:
+        logger.error("Could not get any comments. Exiting gracefully")
+        sys.exit(0)
+    elif len(comments) < 100:
         logger.warning(
-            "Found less than 100 comments. Not enough data "
-            "to make much sense. Plots will be made regardless")
+            "Found {} comment(s). Not enough data "
+            "to make much sense. Plots will be made regardless".format(
+                len(comments)
+            )
+        )
     else:
         logger.info("Got {} comments from {} post(s) in {} seconds".format(
             len(comments), len(posts["data"]), round((time.time() - local_start), 1)))
