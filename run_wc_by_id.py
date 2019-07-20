@@ -7,7 +7,7 @@ import time
 from classes.TextPreprocessor import TextPreprocessor
 from classes.WordCloudPlotter import Plotter
 from utils import (
-    get_logger, load_config, get_data, get_comments, do_wordcount,
+    get_logger, load_config, get_post_data, get_comments, do_wordcount,
     create_nonexistent_dir, save_data, save_barplot
 )
 
@@ -46,7 +46,7 @@ def main():
     logger.info("Getting data for post {}".format(url_post))
     actual_post_id = page_id + "_" + post_id
     local_start = time.time()
-    data = get_data(access_token, actual_post_id)
+    data = get_post_data(access_token, actual_post_id)
     comments = get_comments(data)
     if len(comments) == 0:
         logger.error(

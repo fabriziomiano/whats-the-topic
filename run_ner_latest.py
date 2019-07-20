@@ -8,7 +8,7 @@ import facebook
 import spacy
 
 from utils import (
-    get_logger, load_config, get_data, get_comments, save_barplot,
+    get_logger, load_config, get_post_data, get_comments, save_barplot,
     create_nonexistent_dir, save_data, get_entities, count_entities,
     check_n_posts
 )
@@ -74,7 +74,7 @@ def main():
     for post in posts["data"]:
         url_post = "https://www.facebook.com/posts/{}".format(post["id"])
         logger.info("Getting data for post {}".format(url_post))
-        post_data = get_data(access_token, post["id"])
+        post_data = get_post_data(access_token, post["id"])
         post_comments = get_comments(post_data)
         if len(post_comments) == 0:
             logger.warning(

@@ -7,7 +7,7 @@ import time
 import spacy
 
 from utils import (
-    get_logger, load_config, get_data, get_comments, save_barplot,
+    get_logger, load_config, get_post_data, get_comments, save_barplot,
     create_nonexistent_dir, save_data, get_entities, count_entities
 )
 
@@ -56,7 +56,7 @@ def main():
     url_post = "https://www.facebook.com/posts/{}".format(actual_post_id)
     logger.info("Getting data for post {}".format(url_post))
     local_start = time.time()
-    data = get_data(access_token, actual_post_id)
+    data = get_post_data(access_token, actual_post_id)
     comments = get_comments(data)
     if len(comments) == 0:
         logger.error(
