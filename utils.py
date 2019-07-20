@@ -3,9 +3,14 @@ import json
 import logging
 import os
 import sys
+from collections import Counter
 
+import matplotlib.pyplot as plt
 import pandas as pd
 import requests
+import seaborn as sns
+
+from classes.TextPreprocessor import TextPreprocessor
 
 
 def get_logger(name):
@@ -93,26 +98,15 @@ def get_comments(data):
     return all_comments
 
 
-def do_wordcount(preprocessed_comments):
+def do_wordcount(comments):
     """
     Perfom word count on a given list of words
     Return a sorted list of tuples(word, count)
 
-    :param preprocessed_comments: list
+    :param comments: list
     :return: list
     """
-    wordcount = {}
-    for comment in preprocessed_comments:
-        for word in comment.split():
-            if word in wordcount:
-                wordcount[word] += 1
-            else:
-                wordcount[word] = 1
-    counts = [value for value in wordcount.values()]
-    words = [key for key in wordcount.keys()]
-    points = sorted(zip(words, counts),
-                    key=lambda x: x[1], reverse=True)
-    return points
+    return Counter(" ".join(comments).split()).most_common()
 
 
 def save_data(wordcount_data, data_filename):
@@ -143,3 +137,87 @@ def create_nonexistent_dir(path, exc_raise=False):
             if exc_raise:
                 raise
         return None
+
+
+def get_entities(nlp, comment):
+    """
+    Return list of entities in a given text
+    :param comment:
+    :param nlp:
+    :return: list
+
+    example on how to add exception:
+
+    nlp.tokenizer.add_special_case(
+        'india', [
+            {
+                ORTH: 'india',
+                LEMMA: 'India',
+                TAG: 'NNP',
+                ENT_TYPE: 'GPE',
+                ENT_IOB: 3
+            }
+        ]
+    )
+    """
+    tp = TextPreprocessor(comment)
+    comment = tp.remove_non_ascii()
+    if comment is not None and len(comment) > 3:
+        doc = nlp(comment)
+        entities = [
+            ent.text for ent in doc.ents
+            if len(ent.text) > 3
+        ]
+    else:
+        entities = []
+    return entities
+
+
+def count_entities(entities):
+    """
+    Return entity cound
+    :param entities:
+    :return:
+    """
+    return Counter(entities).most_common()
+
+
+def save_barplot(data, n_max, path, type_="Words"):
+    """
+    Save bar plot of given word count data
+
+    :param data: list of tuples
+    :param n_max: int n_max of object in dataset
+    :param path: str file path
+    :param type_: optional str: type to plot
+    :return: None
+    """
+    df = pd.DataFrame(data, columns=["word", "count"])
+    plt.figure(figsize=(n_max, 10))
+    barplot = sns.barplot("word", "count", data=df[:n_max], palette="Blues_d")
+    barplot.set_title("Top {} {}".format(n_max, type_))
+    plt.xticks(rotation=30)
+    plt.xlabel("Word")
+    plt.ylabel("Count", labelpad=60, rotation=0)
+    plt.savefig(path)
+
+
+def check_n_posts(n_posts):
+    is_sure = "n"
+    while n_posts == "" and is_sure == "n":
+        message = (
+            """
+            No limit on number of posts was chosen.
+            This means that the tool will perform requests
+            at the Facebook servers until the maximum number of requests
+            is reached. At that point you'll have to wait at least 50 minutes
+            to run it again. Are you still thinking of doing this? y/n: """
+        )
+        is_sure = input(message)
+        if is_sure == "y":
+            utils_log.warning("Alright! Let's get as much as we've got left")
+            break
+        elif is_sure == "n":
+            n_posts = input("Good, then provide number of latest posts to analyze: ")
+        else:
+            is_sure = input(message)
