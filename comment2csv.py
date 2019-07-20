@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 from utils import (
-    get_logger, load_config, get_post_data, get_comments, check_n_posts
+    get_logger, load_config, get_post_data, get_comments, check_n_posts, create_nonexistent_dir
 )
 
 
@@ -25,8 +25,10 @@ def main():
     logger = get_logger(__name__)
     logger.setLevel(logging.DEBUG)
     conf = load_config(config_path)
-    n_posts = input("Provide number of latest posts to analyze: ")
-    check_n_posts(n_posts)
+    n_posts = check_n_posts()
+    if not n_posts.isdigit():
+        logger.error("Please give a number. Exiting")
+        sys.exit(0)
     try:
         access_token = conf["access_token"]
         page_id = conf["page_id"]
@@ -75,9 +77,11 @@ def main():
         "sentiment": sentiments
     }
     df = pd.DataFrame(data, columns=["comment", "sentiment"])
-    data_filename = "{}_comments.csv".format(len(comments))
-    data_filepath = os.path.join(conf["data_dir_name"], data_filename)
-    df.to_csv(data_filepath, index=False)
+    data_dir_name = os.path.join(page_id, conf["data_dir_name"])
+    create_nonexistent_dir(data_dir_name)
+    data_filename = "{}_comments.tsv".format(len(comments))
+    data_filepath = os.path.join(data_dir_name, data_filename)
+    df.to_csv(data_filepath, index=False, sep="\t")
     logger.info("Saved {} comments in {} ".format(
         len(comments), data_filepath))
     logger.info("\a\a\aDIN DONE! in {} seconds".format(
