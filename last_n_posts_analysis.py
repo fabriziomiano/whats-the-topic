@@ -6,11 +6,11 @@ import time
 
 import facebook
 
-from classes.Plotter import Plotter
+from classes.WordCloudPlotter import Plotter
 from classes.TextPreprocessor import TextPreprocessor
 from utils import (
     get_logger, load_config, get_data, get_comments, do_wordcount,
-    create_nonexistent_dir, save_data
+    create_nonexistent_dir, save_data, save_barplot, check_n_posts
 )
 
 
@@ -27,6 +27,7 @@ def main():
     logger.setLevel(logging.DEBUG)
     conf = load_config(config_path)
     n_posts = input("Provide number of latest posts to analyze: ")
+    check_n_posts(n_posts)
     try:
         access_token = conf["access_token"]
         page_id = conf["page_id"]
@@ -53,7 +54,7 @@ def main():
     local_start = time.time()
     posts = graph.get_connections(profile["id"], "posts", limit=n_posts)
     logger.info("Got {} posts".format(n_posts))
-    data = []
+    comments = []
     for post in posts["data"]:
         url_post = "https://www.facebook.com/posts/{}".format(post["id"])
         logger.info("Getting data for post {}".format(url_post))
@@ -65,8 +66,7 @@ def main():
                 Check the actual post on its Facebook page 
                 https://www.facebook.com/posts/{}""".format(post["id"])
             )
-        data.extend(post_data)
-    comments = get_comments(data)
+        comments.extend(post_comments)
     if len(comments) < 100:
         logger.warning(
             "Found less than 100 comments. Not enough data "
@@ -84,16 +84,15 @@ def main():
     save_data(wordcount_data, data_filepath)
     logger.info("Saved {} words and their counts in {} ".format(
         len(wordcount_data), data_filepath))
-    logger.info("Making plots")
+    create_nonexistent_dir(plots_dir_path)
+    save_barplot(wordcount_data, n_top_words, barplot_filepath)
+    logger.info("Bar plot saved at {}".format(barplot_filepath))
     unstemmed_comments = [TextPreprocessor(comm).base_preprocess() for comm in comments]
     long_string = " ".join(uc for uc in unstemmed_comments)
-    p = Plotter(long_string, wordcount_data)
-    create_nonexistent_dir(plots_dir_path)
+    p = Plotter(long_string)
     p.save_wordcloud_plot(wc_plot_filepath)
     logger.info("Wordcloud plot saved at {}".format(wc_plot_filepath))
-    p.save_barplot(n_top_words, barplot_filepath)
-    logger.info("Bar plot saved at {}".format(barplot_filepath))
-    logger.info("\aDIN DONE! in {} seconds".format(
+    logger.info("\a\a\aDIN DONE! in {} seconds".format(
         round((time.time() - start), 1)))
 
 
