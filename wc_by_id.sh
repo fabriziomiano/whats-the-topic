@@ -4,7 +4,7 @@ function usage()
     echo ""
     echo -e "\tInstructions"
     echo ""
-    echo -e "\tsource by_id.sh <path/to/config-file>"
+    echo -e "\tsource wc_by_id.sh <path/to/config-file>"
     echo ""
 }
 
@@ -15,6 +15,6 @@ if [[ -z $CONFIG ]]; then
     echo -e "\a"
     usage
 else
-    echo "INFO :: Running Word Count using config file" $CONFIG
-    python ./post_analysis.py --conf $CONFIG
+    echo "INFO :: Running Word Count using config file:" $CONFIG
+    python ./run_wc_by_id.py --conf $CONFIG
 fi
