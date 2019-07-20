@@ -4,8 +4,8 @@ import os
 import sys
 import time
 
-from classes.WordCloudPlotter import Plotter
 from classes.TextPreprocessor import TextPreprocessor
+from classes.WordCloudPlotter import Plotter
 from utils import (
     get_logger, load_config, get_data, get_comments, do_wordcount,
     create_nonexistent_dir, save_data, save_barplot
@@ -20,20 +20,20 @@ def main():
         help='Specify the path of the configuration file')
     args = parser.parse_args()
     config_path = args.conf
-    post_id = ""
-    while post_id == "":
-        post_id = input("Provide post ID: ")
     start = time.time()
     logger = get_logger(__name__)
     logger.setLevel(logging.DEBUG)
     conf = load_config(config_path)
+    post_id = ""
+    while post_id == "":
+        post_id = input("Provide post ID: ")
     try:
         access_token = conf["access_token"]
         page_id = conf["page_id"]
         n_top_words = conf["n_top_words"]
-        data_dir_path = conf["data_dir_name"]
-        data_filename = "{}_{}{}".format(conf["csv_prefix"], post_id, ".csv")
-        plots_dir_path = os.path.join(conf["plots_dir_name"], page_id, "single_posts", post_id)
+        data_dir_path = os.path.join(page_id, conf["data_dir_name"])
+        data_filename = "{}_{}{}".format(conf["data_wc_prefix"], post_id, ".csv")
+        plots_dir_path = os.path.join(page_id, conf["plots_dir_name"], "single_posts", post_id)
         wc_plot_filename = "{}_{}{}".format(conf["wc_plot_filename"], post_id, ".png")
         wc_plot_filepath = os.path.join(plots_dir_path, wc_plot_filename)
         barplot_filename = "{}_{}{}".format(conf["barplot_filename"], post_id, ".png")
@@ -57,8 +57,9 @@ def main():
         sys.exit(0)
     elif len(comments) < 100:
         logger.warning(
-            "Got less than 100 comments. Not enough data "
-            "to make much sense. Plots will be made regardless")
+            "Got {} comments. Not enough data "
+            "to make much sense. Plots will be made regardless".format(len(comments))
+        )
     else:
         logger.info("Got {} comments in {} seconds".format(
             len(comments), round((time.time() - local_start), 2)))
