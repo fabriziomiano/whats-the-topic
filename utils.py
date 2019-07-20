@@ -201,22 +201,40 @@ def save_barplot(data, n_max, path, type_="Words"):
     plt.savefig(path)
 
 
-def check_n_posts(n_posts):
+def check_n_posts():
+    """
+
+    :return: str
+    """
+    n_posts = input("Provide number of latest posts to analyze: ")
     is_sure = "n"
-    while n_posts == "" and is_sure == "n":
-        message = (
-            """
-            No limit on number of posts was chosen.
-            This means that the tool will perform requests
-            at the Facebook servers until the maximum number of requests
-            is reached. At that point you'll have to wait at least 50 minutes
-            to run it again. Are you still thinking of doing this? y/n: """
-        )
+    while n_posts in ["", "0", "-1"] and is_sure == "n":
+        if n_posts in ["", "0"]:
+            message = (
+                "An empy/zero answer defaults to 25 posts. Happy with this? y/n: "
+            )
+        else:
+            message = (
+                """
+                No limit on number of posts was chosen.
+                This means that the tool will perform requests
+                at the Facebook servers until the maximum number of requests
+                is reached. At that point you'll have to wait at least 50 minutes
+                to run it again. Are you still thinking of doing this? y/n: """
+            )
         is_sure = input(message)
         if is_sure == "y":
-            utils_log.warning("Alright! Let's get as much as we've got left")
+            if n_posts == "-1":
+                utils_log.warning("Alright! Let's get as much as we're allowed")
+            elif n_posts in ["", "0"]:
+                utils_log.info("Default to 25 posts")
             break
         elif is_sure == "n":
             n_posts = input("Good, then provide number of latest posts to analyze: ")
         else:
             is_sure = input(message)
+            if is_sure == "y":
+                break
+            else:
+                is_sure = "n"
+    return n_posts
