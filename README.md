@@ -1,5 +1,5 @@
-# FBPostTopicAna
-Facebook post basic topic analysis
+# FBCommentsTopicAnalysis
+Facebook comments basic topic analysis
 
 ## What is it?
 A simple tool to run a basic, very simple, 
@@ -42,6 +42,20 @@ The tool will run until the settings requested are met or
 up until the max request rate that facebook applies is reached.
 
 That's it!
+
+## Results 
+Here there are two images of the plots that are produced 
+by running the tool on this post:
+https://www.facebook.com/GiveToTheNext/posts/477277113022512
+
+#### Bar plot using the top 20 words
+
+![alt_text](https://raw.githubusercontent.com/fabriziomiano/FBCommentsTopicAnalysis/master/sample_img/barplot_445363319547225_477277113022512.png)
+
+#### Word cloud with no stemming 
+
+![alt text](https://raw.githubusercontent.com/fabriziomiano/FBCommentsTopicAnalysis/master/sample_img/wc_445363319547225_477277113022512.png)
+
 
 ## Credits
 Thanks to the people who made 
