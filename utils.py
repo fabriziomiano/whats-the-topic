@@ -125,18 +125,20 @@ def create_nonexistent_dir(path, exc_raise=False):
     """
     Create directory from given path
     Return True if created, False if it exists
+
     """
     try:
         os.makedirs(path)
         utils_log.info("Created directory with path: {}".format(path))
-        return path
+        is_success = True
     except OSError as e:
+        is_success = False
         if e.errno != errno.EEXIST:
             utils_log.exception(
                 "Could not create directory with path: {}".format(path))
             if exc_raise:
                 raise
-        return None
+    return is_success
 
 
 def get_entities(nlp, comment):
