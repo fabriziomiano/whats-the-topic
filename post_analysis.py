@@ -28,13 +28,14 @@ def main():
     try:
         access_token = conf["access_token"]
         page_id = conf["page_id"]
-        plots_dir_path = os.path.join(conf["plots_dir_path"], )
-        data_dir_path = conf["data_dir_path"]
         n_top_words = conf["n_top_words"]
-        wc_plot_filename = "{}_{}{}".format(conf["wc_plot_filename"], page_id + "_" + post_id, ".png")
-        barplot_filename = "{}_{}{}".format(conf["barplot_filename"], page_id + "_" + post_id, ".png")
-        data_filename = "{}_{}{}".format(conf["csv_prefix"], page_id + "_" + post_id, ".csv")
+        data_dir_path = conf["data_dir_name"]
+        data_filename = "{}_{}{}".format(conf["csv_prefix"], post_id, ".csv")
+        plots_dir_path = os.path.join(conf["plots_dir_name"], page_id, "single_posts", post_id)
+        plot_suffix = post_id.split("_")[1]
+        wc_plot_filename = "{}_{}{}".format(conf["wc_plot_filename"], plot_suffix, ".png")
         wc_plot_filepath = os.path.join(plots_dir_path, wc_plot_filename)
+        barplot_filename = "{}_{}{}".format(conf["barplot_filename"], plot_suffix, ".png")
         barplot_filepath = os.path.join(plots_dir_path, barplot_filename)
     except KeyError:
         logger.error(
@@ -48,13 +49,13 @@ def main():
     if len(comments) == 0:
         logger.error(
             """Apparently, there are no comments at the selected post
-            Check Facebook page 
-            https://www.facebook.com/virginia.raggi.m5sroma/posts/{}""".format(post_id)
+            Check the actual post on its Facebook page 
+            https://www.facebook.com/{}/posts/{}""".format(page_id, post_id)
         )
         sys.exit(0)
-    elif len(comments) == 1:
+    elif len(comments) < 100:
         logger.warning(
-            "Found only 1 comments. Not enough data "
+            "Got less than 100 comments. Not enough data "
             "to make much sense. Plots will be made regardless")
     else:
         logger.info("Got {} comments in {} seconds".format(
@@ -65,7 +66,6 @@ def main():
         len(preprocessed_comments), len(comments), round((time.time() - local_start), 1)))
     logger.info("Performing word count")
     wordcount_data = do_wordcount(preprocessed_comments)
-    logger.info("Saving data to CSV with name {} ".format(data_filename))
     create_nonexistent_dir(data_dir_path)
     data_filepath = os.path.join(data_dir_path, data_filename)
     save_data(wordcount_data, data_filepath)
