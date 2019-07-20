@@ -118,7 +118,7 @@ https://www.facebook.com/GiveToTheNext/posts/477277113022512
 
 ![alt text](https://raw.githubusercontent.com/fabriziomiano/FBCommentsTopicAnalysis/master/sample_img/wc_445363319547225_477277113022512.png)
 
-#### Bar plot using the top 20 words
+#### Bar plot using the top 12 entities
 
 ![alt_text](https://raw.githubusercontent.com/fabriziomiano/FBCommentsTopicAnalysis/master/sample_img/barplot_477277113022512_ner.png)
 
