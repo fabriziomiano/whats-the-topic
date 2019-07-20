@@ -24,6 +24,7 @@ class TextPreprocessor(object):
                 .encode('ascii', 'ignore').decode('utf-8', 'ignore')
             onlyascii_tokens.append(token)
         self.text = " ".join(token for token in onlyascii_tokens)
+        return self.text
 
     def remove_stopwords(self):
         """
