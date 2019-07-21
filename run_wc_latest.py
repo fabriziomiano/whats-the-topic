@@ -10,7 +10,7 @@ from classes.TextPreprocessor import TextPreprocessor
 from classes.WordCloudPlotter import Plotter
 from utils import (
     get_logger, load_config, get_post_data, get_comments, do_wordcount,
-    create_nonexistent_dir, save_data, save_barplot, check_n_posts
+    create_nonexistent_dir, data_to_tsv, save_barplot, check_n_posts
 )
 
 
@@ -87,11 +87,13 @@ def main():
     wordcount_data = do_wordcount(preprocessed_comments)
     create_nonexistent_dir(data_dir_path)
     data_filepath = os.path.join(data_dir_path, data_filename)
-    save_data(wordcount_data, data_filepath)
+    columns = ["word", "count"]
+    data_to_tsv(wordcount_data, columns, data_filepath)
     logger.info("Saved {} words and their counts in {} ".format(
         len(wordcount_data), data_filepath))
     create_nonexistent_dir(plots_dir_path)
-    save_barplot(wordcount_data, n_top_words, barplot_filepath)
+    plot_labels = ["Words", "Counts"]
+    save_barplot(wordcount_data, plot_labels, n_top_words, barplot_filepath)
     logger.info("Bar plot saved at {}".format(barplot_filepath))
     unstemmed_comments = [TextPreprocessor(comm).base_preprocess() for comm in comments]
     long_string = " ".join(uc for uc in unstemmed_comments)

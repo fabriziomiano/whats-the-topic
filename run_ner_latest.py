@@ -9,7 +9,7 @@ import spacy
 
 from utils import (
     get_logger, load_config, get_post_data, get_comments, save_barplot,
-    create_nonexistent_dir, save_data, get_entities, count_entities,
+    create_nonexistent_dir, data_to_tsv, get_entities, count_entities,
     check_n_posts
 )
 
@@ -108,11 +108,13 @@ def main():
     entities_data = count_entities(entities)
     create_nonexistent_dir(data_dir_path)
     data_filepath = os.path.join(data_dir_path, data_filename)
-    save_data(entities_data, data_filepath)
+    columns = ["entities", "count"]
+    data_to_tsv(entities_data, columns, data_filepath)
     logger.info("Saved {} unique entities and their counts in {} ".format(
         len(entities_data), data_filepath))
     create_nonexistent_dir(plots_dir_path)
-    save_barplot(entities_data, n_top_entities, barplot_filepath, type_="entities")
+    plot_labels = ["Entities", "Counts"]
+    save_barplot(entities_data, plot_labels, n_top_entities, barplot_filepath, type_="entities")
     logger.info("Bar plot saved at {}".format(barplot_filepath))
     logger.info("\a\a\aDIN DONE! in {} seconds".format(
         round((time.time() - start), 1)))
