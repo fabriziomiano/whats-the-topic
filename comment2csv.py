@@ -5,11 +5,10 @@ import sys
 import time
 
 import facebook
-import numpy as np
-import pandas as pd
 
 from utils import (
-    get_logger, load_config, get_post_data, get_comments, check_n_posts, create_nonexistent_dir
+    get_logger, load_config, get_post_data, get_comments, check_n_posts,
+    create_nonexistent_dir, data_to_tsv
 )
 
 
@@ -71,17 +70,13 @@ def main():
     else:
         logger.info("Got {} comments from {} post(s) in {} seconds".format(
             len(comments), len(posts["data"]), round((time.time() - local_start), 1)))
-    sentiments = np.zeros(len(comments))
-    data = {
-        "comment": comments,
-        "sentiment": sentiments
-    }
-    df = pd.DataFrame(data, columns=["comment", "sentiment"])
     data_dir_name = os.path.join(page_id, conf["data_dir_name"])
     create_nonexistent_dir(data_dir_name)
     data_filename = "{}_comments.tsv".format(len(comments))
     data_filepath = os.path.join(data_dir_name, data_filename)
-    df.to_csv(data_filepath, index=False, sep="\t")
+    data = zip(comments, [0] * len(comments))
+    columns = ["comment", "sentiment"]
+    data_to_tsv(data, columns, data_filepath)
     logger.info("Saved {} comments in {} ".format(
         len(comments), data_filepath))
     logger.info("\a\a\aDIN DONE! in {} seconds".format(
