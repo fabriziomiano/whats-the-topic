@@ -1,3 +1,4 @@
+import csv
 import errno
 import json
 import logging
@@ -6,7 +7,6 @@ import sys
 from collections import Counter
 
 import matplotlib.pyplot as plt
-import pandas as pd
 import requests
 import seaborn as sns
 
@@ -94,7 +94,10 @@ def get_comments(data):
             replies = comment["comments"]["data"]
             all_comments.extend(
                 [reply["message"] for reply in replies])
-        all_comments.append(comment["message"])
+        if comment["message"] != "":
+            all_comments.append(comment["message"])
+        else:
+            continue
     return all_comments
 
 
@@ -109,16 +112,19 @@ def do_wordcount(comments):
     return Counter(" ".join(comments).split()).most_common()
 
 
-def save_data(wordcount_data, data_filename):
+def data_to_tsv(data, columns, outfile_path):
     """
-    Save a CSV file of a given word count data
+    Write data to a CSV file.
 
-    :param wordcount_data: list of tuples(word, count)
-    :param data_filename: str
+    :param data: iterable with data
+    :param columns: list of columns name (header)
+    :param outfile_path: str output file path
     :return: None
     """
-    df = pd.DataFrame(wordcount_data, columns=["word", "count"])
-    df.to_csv(data_filename, index=False)
+    with open(outfile_path, "w", encoding="utf-8") as csv_file:
+        w = csv.writer(csv_file, delimiter="\t")
+        w.writerow(columns)
+        w.writerows(data)
 
 
 def create_nonexistent_dir(path, exc_raise=False):
@@ -181,28 +187,34 @@ def count_entities(entities):
     return Counter(entities).most_common()
 
 
-def save_barplot(data, n_max, path, type_="Words"):
+def save_barplot(data, labels, n_max, path, type_="Words"):
     """
-    Save bar plot of given word count data
+    Save bar plot of given data in format list(tuples)
 
     :param data: list of tuples
-    :param n_max: int n_max of object in dataset
-    :param path: str file path
-    :param type_: optional str: type to plot
+    :param labels: list: x and y axis labels in this order
+    :param n_max: int: max number of elements
+    :param path: str: output file path
+    :param type_: str, optional
     :return: None
     """
-    df = pd.DataFrame(data, columns=["word", "count"])
+    x, y = zip(*data)
     plt.figure(figsize=(n_max, 10))
-    barplot = sns.barplot("word", "count", data=df[:n_max], palette="Blues_d")
-    barplot.set_title("Top {} {}".format(n_max, type_))
+    ax = sns.barplot(
+        list(x)[:n_max],
+        list(y)[:n_max],
+        palette="Blues_d")
+    ax.set_title("Top {} {}".format(n_max, type_))
     plt.xticks(rotation=30)
-    plt.xlabel("Word")
-    plt.ylabel("Count", labelpad=60, rotation=0)
+    plt.xlabel(labels[0])
+    plt.ylabel(labels[1], labelpad=60, rotation=0)
     plt.savefig(path)
 
 
 def check_n_posts():
     """
+    Check that the number of posts to run on
+    is given correctly
 
     :return: str
     """
