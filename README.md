@@ -112,15 +112,15 @@ https://www.facebook.com/GiveToTheNext/posts/477277113022512
 
 #### Bar plot using the top 20 words
 
-![alt_text](https://raw.githubusercontent.com/fabriziomiano/FBCommentsTopicAnalysis/master/sample_img/barplot_445363319547225_477277113022512.png)
+![alt_text](https://raw.githubusercontent.com/fabriziomiano/fb-comments-simple-analysis/master/sample_img/barplot_445363319547225_477277113022512.png)
 
 #### Word cloud with no stemming 
 
-![alt text](https://raw.githubusercontent.com/fabriziomiano/FBCommentsTopicAnalysis/master/sample_img/wc_445363319547225_477277113022512.png)
+![alt text](https://raw.githubusercontent.com/fabriziomiano/fb-comments-simple-analysis/master/sample_img/wc_477277113022512.png)
 
 #### Bar plot using the top 12 entities
 
-![alt_text](https://raw.githubusercontent.com/fabriziomiano/FBCommentsTopicAnalysis/master/sample_img/barplot_477277113022512_ner.png)
+![alt_text](https://raw.githubusercontent.com/fabriziomiano/fb-comments-simple-analysis/master/sample_img/barplot_477277113022512_ner.png)
 
 ## Acknowledgements
 Thanks to the people at [spaCy](https://github.com/explosion/spaCy)
