@@ -17,6 +17,8 @@ class Plotter(object):
         :return: None
         """
         wc = WordCloud(
+            width=800,
+            height=600,
             background_color="black",
             contour_width=3,
             contour_color="steelblue"
@@ -31,6 +33,8 @@ class Plotter(object):
         :return: WordCloud.to_image() instance
         """
         wc = WordCloud(
+            width=800,
+            height=600,
             background_color="black",
             contour_width=3,
             contour_color='steelblue'
