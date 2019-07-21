@@ -39,7 +39,7 @@ def main():
             logger.error("Could not find model in conf file. Please double check")
             sys.exit(0)
     n_posts = check_n_posts()
-    if not n_posts.isdigit():
+    if not n_posts.isdigit() and n_posts != "-1":
         logger.error("Please give a number. Exiting")
         sys.exit(0)
     try:
@@ -47,7 +47,7 @@ def main():
         page_id = conf["page_id"]
         n_top_entities = conf["n_top_entities"]
         data_dir_path = os.path.join(page_id, conf["data_dir_name"])
-        data_filename = "{}_{}.csv".format(conf["data_entities_prefix"], str(n_posts))
+        data_filename = "{}_{}.tsv".format(conf["data_entities_prefix"], str(n_posts))
         plots_dir_path = os.path.join(page_id, conf["plots_dir_name"])
         barplot_filename = "{}_{}posts_ner.png".format(conf["barplot_filename"], str(n_posts))
         barplot_filepath = os.path.join(plots_dir_path, barplot_filename)

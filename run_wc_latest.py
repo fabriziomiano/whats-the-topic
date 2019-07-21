@@ -27,7 +27,7 @@ def main():
     logger.setLevel(logging.DEBUG)
     conf = load_config(config_path)
     n_posts = check_n_posts()
-    if not n_posts.isdigit():
+    if not n_posts.isdigit() and n_posts != "-1":
         logger.error("Please give a number. Exiting")
         sys.exit(0)
     try:
@@ -35,7 +35,7 @@ def main():
         page_id = conf["page_id"]
         n_top_words = conf["n_top_words"]
         data_dir_path = os.path.join(page_id, conf["data_dir_name"])
-        data_filename = "{}_{}.csv".format(conf["data_wc_prefix"], str(n_posts))
+        data_filename = "{}_{}.tsv".format(conf["data_wc_prefix"], str(n_posts))
         plots_dir_path = os.path.join(page_id, conf["plots_dir_name"])
         wc_plot_filename = "{}_{}posts.png".format(conf["wc_plot_filename"], str(n_posts))
         wc_plot_filepath = os.path.join(plots_dir_path, wc_plot_filename)
