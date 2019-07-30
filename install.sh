@@ -1,5 +1,6 @@
 #!/bin/bash
-pip3 install virtualenv && \
-    virtualenv fbenv -p python3 && \
+sudo apt install -y python3-venv && \
+    python3 -m venv fbenv && \
     source fbenv/bin/activate && \
+    pip install --upgrade pip && \
     pip install -r requirements.txt
