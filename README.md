@@ -1,5 +1,5 @@
-# FBCommentsTopicAnalysis
-Facebook comments basic topic analysis
+# What's the topic?
+What are people talking about in my post(s)?
 
 ## What is it?
 A simple tool to run a basic, very simple, 
