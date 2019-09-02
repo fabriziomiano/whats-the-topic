@@ -1,6 +1,6 @@
 facebook-sdk==3.1.0
 matplotlib==3.1.1
-nltk==3.4.4
+nltk>=3.4.5
 seaborn==0.9.0
 spacy>=2.0.0,<3.0.0
 https://github.com/explosion/spacy-models/releases/download/it_core_news_sm-2.1.0/it_core_news_sm-2.1.0.tar.gz
