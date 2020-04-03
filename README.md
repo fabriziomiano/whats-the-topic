@@ -124,7 +124,7 @@ https://www.facebook.com/GiveToTheNext/posts/477277113022512
 
 ## Acknowledgements
 Thanks to the people at [spaCy](https://github.com/explosion/spaCy)
-for the NE part,to the people who produced 
+for the NE part, to the people who produced 
 [facebook-sdk](https://github.com/mobolic/facebook-sdk)
 for the ease of access to the data, and finally to the guys who made 
 [word_cloud](https://amueller.github.io/word_cloud) for the awesome word-cloud images
